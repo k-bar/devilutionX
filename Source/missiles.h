@@ -134,6 +134,47 @@ struct Missile {
 	}
 };
 
+class Collidable {
+public:
+	Missile *cm;
+	int m_minDam;
+	int m_maxDam;
+	bool m_shift;
+};
+
+class TrapMissile : public Collidable {
+
+public:
+	TrapMissile(Missile missile, int minDam, int maxDam, bool shift)
+	{
+		cm = &missile;
+		m_minDam = minDam;
+		m_maxDam = maxDam;
+		m_shift = shift;
+	}
+	int CalculateCTH(devilution::Monster &monster) const;
+	int CalculateDamageAgainstMonster() const;
+	void HitMonster(int mid, int dam) const;
+};
+
+class PlayerMissile : public Collidable {
+
+public:
+	PlayerMissile(Missile missile, int minDam, int maxDam, bool shift)
+	{
+		cm = &missile;
+		m_minDam = minDam;
+		m_maxDam = maxDam;
+		m_shift = shift;
+	}
+	int CalculateCTH(devilution::Monster &monster) const;
+	int CalculateDamageAgainstMonster() const;
+	void HitMonster(int mid, int dam) const;
+};
+
+template <typename TCollidable>
+bool TryHitMonster(TCollidable const &col, int mid);
+
 extern std::list<Missile> Missiles;
 extern bool MissilePreFlag;
 
@@ -160,7 +201,6 @@ int GetSpellLevel(int playerId, spell_id sn);
  * @return the direction of the p1->p2 vector
  */
 Direction16 GetDirection16(Point p1, Point p2);
-bool MonsterTrapHit(int m, int mindam, int maxdam, int dist, missile_id t, bool shift);
 bool PlayerMHit(int pnum, Monster *monster, int dist, int mind, int maxd, missile_id mtype, bool shift, int earflag, bool *blocked);
 
 /**
