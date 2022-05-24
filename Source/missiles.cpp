@@ -317,7 +317,7 @@ void CheckMissileCol(Missile &missile, int mindam, int maxdam, bool shift, Point
 		if (missile._micaster == TARGET_MONSTERS) {
 			int mid = dMonster[mx][my];
 			if (mid != 0 && (mid > 0 || Monsters[abs(mid) - 1]._mmode == MonsterMode::Petrified)) {
-				if (TryHitMonster(PlayerMissile(missile, mindam, maxdam, shift), abs(mid) - 1)) {
+				if ((PlayerMissile(missile, mindam, maxdam, shift).TryHitMonster(abs(mid) - 1))) {
 					if (!nodel)
 						missile._mirange = 0;
 					missile._miHitFlag = true;
@@ -346,7 +346,7 @@ void CheckMissileCol(Missile &missile, int mindam, int maxdam, bool shift, Point
 			if ((monster._mFlags & MFLAG_TARGETS_MONSTER) != 0
 			    && dMonster[mx][my] > 0
 			    && (Monsters[dMonster[mx][my] - 1]._mFlags & MFLAG_GOLEM) != 0
-			    && TryHitMonster(TrapMissile(missile, mindam, maxdam, shift), dMonster[mx][my] - 1)) {
+			    && (TrapMissile(missile, mindam, maxdam, shift).TryHitMonster(dMonster[mx][my] - 1))) {
 				if (!nodel)
 					missile._mirange = 0;
 				missile._miHitFlag = true;
@@ -375,12 +375,12 @@ void CheckMissileCol(Missile &missile, int mindam, int maxdam, bool shift, Point
 		if (mid > 0) {
 			mid -= 1;
 			if (missile._micaster == TARGET_BOTH) {
-				if (TryHitMonster(PlayerMissile(missile, mindam, maxdam, shift), mid)) {
+				if (PlayerMissile(missile, mindam, maxdam, shift).TryHitMonster(mid)) {
 					if (!nodel)
 						missile._mirange = 0;
 					missile._miHitFlag = true;
 				}
-			} else if (TryHitMonster(TrapMissile(missile, mindam, maxdam, shift), mid)) {
+			} else if (TrapMissile(missile, mindam, maxdam, shift).TryHitMonster(mid)) {
 				if (!nodel)
 					missile._mirange = 0;
 				missile._miHitFlag = true;
@@ -914,12 +914,11 @@ void TrapMissile::HitMonster(int mid, int dam) const
 	MissileHitMonsterConsequences(mid, cm->_misource, dam, cm->_mitype);
 }
 
-template <typename TCollidable>
-bool TryHitMonster(TCollidable const &col, int mid)
+bool Collidable::TryHitMonster(int mid)
 {
 	Monster &monster = Monsters[mid];
 
-	if (!monster.IsPossibleToHit() || monster.IsImmune(col.cm->_mitype))
+	if (!monster.IsPossibleToHit() || monster.IsImmune(cm->_mitype))
 		return false;
 
 	if (monster.TryLiftGargoyle())
@@ -927,7 +926,7 @@ bool TryHitMonster(TCollidable const &col, int mid)
 
 	if (monster._mmode != MonsterMode::Petrified) {
 		int hit = GenerateRnd(100);
-		int hper = col.CalculateCTH(monster);
+		int hper = CalculateCTH(monster);
 		hper = clamp(hper, 5, 95);
 
 		if (hit >= hper) {
@@ -939,17 +938,17 @@ bool TryHitMonster(TCollidable const &col, int mid)
 	}
 
 	int dam;
-	if (col.cm->_mitype == MIS_BONESPIRIT)
+	if (cm->_mitype == MIS_BONESPIRIT)
 		dam = monster._mhitpoints / 3 >> 6;
 	else
-		dam = col.CalculateDamageAgainstMonster();
+		dam = CalculateDamageAgainstMonster();
 
-	if (!col.m_shift)
+	if (!m_shift)
 		dam <<= 6;
-	if (monster.IsResistant(col.cm->_mitype))
+	if (monster.IsResistant(cm->_mitype))
 		dam >>= 2;
 
-	col.HitMonster(mid, dam);
+	HitMonster(mid, dam);
 
 	return true;
 }

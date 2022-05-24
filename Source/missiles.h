@@ -140,6 +140,10 @@ public:
 	int m_minDam;
 	int m_maxDam;
 	bool m_shift;
+	virtual int CalculateCTH(Monster &monster) const = 0;
+	virtual int CalculateDamageAgainstMonster() const = 0;
+	virtual void HitMonster(int mid, int dam) const = 0;
+	bool TryHitMonster(int mid);
 };
 
 class TrapMissile : public Collidable {
@@ -152,9 +156,9 @@ public:
 		m_maxDam = maxDam;
 		m_shift = shift;
 	}
-	int CalculateCTH(devilution::Monster &monster) const;
-	int CalculateDamageAgainstMonster() const;
-	void HitMonster(int mid, int dam) const;
+	int CalculateCTH(Monster &monster) const override;
+	int CalculateDamageAgainstMonster() const override;
+	void HitMonster(int mid, int dam) const override;
 };
 
 class PlayerMissile : public Collidable {
@@ -167,13 +171,10 @@ public:
 		m_maxDam = maxDam;
 		m_shift = shift;
 	}
-	int CalculateCTH(devilution::Monster &monster) const;
-	int CalculateDamageAgainstMonster() const;
-	void HitMonster(int mid, int dam) const;
+	int CalculateCTH(devilution::Monster &monster) const override;
+	int CalculateDamageAgainstMonster() const override;
+	void HitMonster(int mid, int dam) const override;
 };
-
-template <typename TCollidable>
-bool TryHitMonster(TCollidable const &col, int mid);
 
 extern std::list<Missile> Missiles;
 extern bool MissilePreFlag;
