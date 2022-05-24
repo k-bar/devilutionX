@@ -1572,11 +1572,7 @@ void UpdateFlameTrap(Object &trap)
 		int x = trap.position.x;
 		int y = trap.position.y;
 		if (dMonster[x][y] > 0) {
-			TrapMissile trapDummyMissile = TrapMissile((Missile {}), mindam / 2, maxdam / 2, false);
-			trapDummyMissile.cm->_midist = 0;
-			trapDummyMissile.cm->_misource = -1;
-			trapDummyMissile.cm->_mitype = MIS_FIREWALLC;
-			trapDummyMissile.TryHitMonster(dMonster[x][y] - 1);
+			TrapMissile((Missile {}), mindam / 2, maxdam / 2, false, 0, -1, MIS_FIREWALLC).TryHitMonster(dMonster[x][y] - 1);
 		}
 		if (dPlayer[x][y] > 0) {
 			bool unused;
@@ -4260,11 +4256,7 @@ void BreakBarrel(int pnum, Object &barrel, int dam, bool forcebreak, bool sendms
 		for (int yp = barrel.position.y - 1; yp <= barrel.position.y + 1; yp++) {
 			for (int xp = barrel.position.x - 1; xp <= barrel.position.x + 1; xp++) {
 				if (dMonster[xp][yp] > 0) {
-					TrapMissile trapDummyMissile = TrapMissile((Missile {}), 1, 4, false);
-					trapDummyMissile.cm->_midist = 0;
-					trapDummyMissile.cm->_misource = -1;
-					trapDummyMissile.cm->_mitype = MIS_FIREBOLT;
-					trapDummyMissile.TryHitMonster(dMonster[xp][yp] - 1);
+					TrapMissile((Missile {}), 1, 4, false, 0, -1, MIS_FIREBOLT).TryHitMonster(dMonster[xp][yp] - 1);
 				}
 				if (dPlayer[xp][yp] > 0) {
 					bool unused;

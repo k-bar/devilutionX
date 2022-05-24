@@ -136,18 +136,21 @@ struct Missile {
 
 class Collidable {
 public:
+	bool TryHitMonster(int mid);
+
+protected:
 	Missile *cm;
 	int m_minDam;
 	int m_maxDam;
 	bool m_shift;
+
+private:
 	virtual int CalculateCTH(Monster &monster) const = 0;
 	virtual int CalculateDamageAgainstMonster() const = 0;
 	virtual void HitMonster(int mid, int dam) const = 0;
-	bool TryHitMonster(int mid);
 };
 
 class TrapMissile : public Collidable {
-
 public:
 	TrapMissile(Missile missile, int minDam, int maxDam, bool shift)
 	{
@@ -156,13 +159,21 @@ public:
 		m_maxDam = maxDam;
 		m_shift = shift;
 	}
+	TrapMissile(Missile missile, int minDam, int maxDam, bool shift, int dist, int miSource, missile_id miType)
+	    : TrapMissile(missile, minDam, maxDam, shift)
+	{
+		cm->_midist = dist;
+		cm->_misource = miSource;
+		cm->_mitype = miType;
+	}
+
+private:
 	int CalculateCTH(Monster &monster) const override;
 	int CalculateDamageAgainstMonster() const override;
 	void HitMonster(int mid, int dam) const override;
 };
 
 class PlayerMissile : public Collidable {
-
 public:
 	PlayerMissile(Missile missile, int minDam, int maxDam, bool shift)
 	{
@@ -171,6 +182,8 @@ public:
 		m_maxDam = maxDam;
 		m_shift = shift;
 	}
+
+private:
 	int CalculateCTH(devilution::Monster &monster) const override;
 	int CalculateDamageAgainstMonster() const override;
 	void HitMonster(int mid, int dam) const override;
